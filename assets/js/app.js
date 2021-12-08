@@ -3,6 +3,8 @@ const button = document.querySelector('.btn')
 const pincode = document.querySelector('.pincode')
 const table = document.querySelector('.table')
 const vaccine_table = document.querySelector('#vaccine_table')
+const date = document.querySelector('#date')
+const noVaccineText = document.querySelector('#noVaccineText')
 
 templating = (arr) =>{
     let template =""
@@ -25,7 +27,7 @@ templating = (arr) =>{
 
 
 button.addEventListener('click', function () {
-    table.style.display = 'block'
+    
     cl(date.value)
     let d = new Date(date.value)
     cl(d.getDate() + '-' + d.getMonth() + '-' + d.getFullYear())
@@ -33,6 +35,18 @@ button.addEventListener('click', function () {
     fetch('https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?pincode=' + pincode.value + '&date=' + d.getDate() + '-' + (d.getMonth() + 1) + '-' + d.getFullYear())
         .then(response => response.json())
         .then(data => {
-            templating(data['sessions'])
+            if((data['sessions'].length) >= 1){
+                table.style.display = 'block'
+                templating(data['sessions'])        
+            }
+            else{
+                table.style.display = 'none'
+                templating(data['sessions'])
+                noVaccineText.style.display = "block"
+            }
+            
         })
+    pincode.value = ''
+    date.value = ''
+
 })
